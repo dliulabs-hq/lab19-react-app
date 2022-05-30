@@ -1,0 +1,37 @@
+name: Development workflow
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Development Code
+        uses: actions/checkout@v2
+      - name: Use Node.js 17.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 17.x
+      - run: npm install
+      - run: npm run build --if-present
+      - name: Add remote origin
+        if: ${{ env.HEROKU_APIKEY != null }}
+        run: |
+          git remote add heroku https://heroku:${{ env.HEROKU_APIKEY }}@git.heroku.com/greactapp.git
+        continue-on-error: true
+        env:
+          HEROKU_APIKEY: ${{ secrets.HEROKU_APIKEY }}
+      - name: Deploy to Heroku
+        if: ${{ env.HEROKU_APIKEY != null }}
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ env.HEROKU_APIKEY }}
+          heroku_app_name: "greactapp"
+          heroku_email: ${{ env.HEROKU_EMAIL }}
+        env:
+          HEROKU_APIKEY: ${{ secrets.HEROKU_APIKEY }}
+          HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
