@@ -52,6 +52,16 @@ git commit -am "setup feature f-001"
 git push origin feature/f-001
 ```
 
+## Push to main Branch for Production
+
+```
+git checkout -b develop
+git pull origin develop
+git checkout -b main
+git merge develop
+git push origin main
+```
+
 ## Available Scripts
 
 In the project directory, you can run:
